@@ -4,7 +4,7 @@ import { ref, reactive, onMounted, watch } from 'vue'
 import TablePayment from './components/Table.vue'
 import { usePagination } from '@/composables/usePagination'
 import type { IPaymentList } from '@/services/payment'
-// import { getPaymentList } from '@/services/payment'
+import { getPaymentList } from '@/services/payment'
 import {
   Card,
   CardContent,
@@ -23,35 +23,10 @@ const data = reactive<IPaymentList>({
 const fetchPayments = async () => {
   try {
     isFetching.value = true
-    // const res = await getPaymentList({
-    //   ...pagination.meta,
-    // })
-    // data.data = res.data.data
-    // data.meta = res.data.meta
-
-    data.data = [
-      {
-        paymentId: 1,
-        merchantName: 'Merchant A',
-        date: '2024-06-01',
-        amount: 100,
-        status: 'completed'
-      },
-      {
-        paymentId: 2,
-        merchantName: 'Merchant B',
-        date: '2024-06-02',
-        amount: 200,
-        status: 'processing'
-      },
-      {
-        paymentId: 3,
-        merchantName: 'Merchant C',
-        date: '2024-06-03',
-        amount: 300,
-        status: 'failed'
-      }
-    ]
+    const res = await getPaymentList({
+      ...pagination.meta,
+    })
+    data.data = res.data.payments
     data.meta = {
       page: pagination.meta.page,
       limit: pagination.meta.limit,
@@ -98,19 +73,25 @@ watch(
     <Card class="bg-white/90 border border-[#E5E5E5] py-4">
       <CardContent class="space-y-2">
         <p>Total</p>
-        <p class="text-primary text-3xl font-medium font-bricolage">3</p>
+        <p class="text-primary text-3xl font-medium font-bricolage">{{ data.data.length }}</p>
       </CardContent>
     </Card>
     <Card class="bg-white/90 border border-[#E5E5E5] py-4">
       <CardContent class="space-y-2">
-        <p>Success</p>
-        <p class="text-primary text-3xl font-medium font-bricolage">2</p>
+        <p>Completed</p>
+        <p class="text-primary text-3xl font-medium font-bricolage">{{ data.data.filter((p) => p.status === 'completed').length }}</p>
+      </CardContent>
+    </Card>
+    <Card class="bg-white/90 border border-[#E5E5E5] py-4">
+      <CardContent class="space-y-2">
+        <p>Processing</p>
+        <p class="text-primary text-3xl font-medium font-bricolage">{{ data.data.filter((p) => p.status === 'processing').length }}</p>
       </CardContent>
     </Card>
     <Card class="bg-white/90 border border-[#E5E5E5] py-4">
       <CardContent class="space-y-2">
         <p>Failed</p>
-        <p class="text-primary text-3xl font-medium font-bricolage">1</p>
+        <p class="text-primary text-3xl font-medium font-bricolage">{{ data.data.filter((p) => p.status === 'failed').length }}</p>
       </CardContent>
     </Card>
   </div>

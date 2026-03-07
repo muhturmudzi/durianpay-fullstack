@@ -42,7 +42,6 @@ const onSubmit = handleSubmit(async (values) => {
   try {
     loading.value = true
     const { data } = await login(values)
-    console.log(data)
 
     userStore.$patch({
       email: data.email,

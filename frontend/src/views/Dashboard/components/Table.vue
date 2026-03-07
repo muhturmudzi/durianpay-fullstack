@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import CustomTable, { type IHead } from '@/components/CustomTable.vue'
+import { toCurrencyFormat, formatDate } from '@/lib/utils'
 
 interface Props<T> {
   data: T
@@ -19,11 +20,11 @@ const head = ref<IHead[]>([
   },
   {
     label: 'Merchant Name',
-    key: 'merchantName',
+    key: 'merchant',
   },
   {
     label: 'Date',
-    key: 'date',
+    key: 'createdAt',
   },
   {
     label: 'Amount',
@@ -32,6 +33,7 @@ const head = ref<IHead[]>([
   {
     label: 'Status',
     key: 'status',
+    tdClass: 'capitalize',
   }
 ])
 </script>
@@ -44,5 +46,11 @@ const head = ref<IHead[]>([
     :is-fetching="isFetching"
     @on-page-change="emit('onPageChange', $event)"
   >
+    <template #createdAt="{ item }">
+      {{ formatDate(item.createdAt) }}
+    </template>
+    <template #amount="{ item }">
+      {{ toCurrencyFormat(item.amount) }}
+    </template>
   </CustomTable>
 </template>

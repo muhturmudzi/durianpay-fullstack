@@ -2,16 +2,21 @@ package http
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
+	"github.com/durianpay/fullstack-boilerplate/internal/config"
 	"github.com/durianpay/fullstack-boilerplate/internal/openapigen"
+	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/golang-jwt/jwt/v5"
 	oapinethttpmw "github.com/oapi-codegen/nethttp-middleware"
 )
 
@@ -26,6 +31,7 @@ const (
 )
 
 func NewServer(apiHandler openapigen.ServerInterface, openapiYamlPath string) *Server {
+
 	swagger, err := openapigen.GetSwagger()
 	if err != nil {
 		log.Fatalf("failed to load swagger: %v", err)
@@ -33,22 +39,50 @@ func NewServer(apiHandler openapigen.ServerInterface, openapiYamlPath string) *S
 
 	r := chi.NewRouter()
 
-	// ===== CORS MIDDLEWARE =====
+	// ======================
+	// CORS
+	// ======================
 	r.Use(cors.Handler(cors.Options{
-    AllowedOrigins: []string{"*"},
-    AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-    AllowedHeaders: []string{"*"},
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"*"},
 	}))
-	// ==============================================
 
 	r.Route("/", func(api chi.Router) {
+
 		api.Use(oapinethttpmw.OapiRequestValidatorWithOptions(
 			swagger,
 			&oapinethttpmw.Options{
+				Options: openapi3filter.Options{
+					AuthenticationFunc: func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+
+						authHeader := input.RequestValidationInput.Request.Header.Get("Authorization")
+						if authHeader == "" {
+							return errors.New("missing Authorization header")
+						}
+
+						tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+						token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+							return []byte(config.JwtSecret), nil
+						})
+
+						if err != nil {
+							return err
+						}
+
+						if !token.Valid {
+							return errors.New("invalid token")
+						}
+
+						return nil
+					},
+				},
 				DoNotValidateServers:  true,
 				SilenceServersWarning: true,
 			},
 		))
+
 		openapigen.HandlerFromMux(apiHandler, api)
 	})
 
@@ -58,6 +92,7 @@ func NewServer(apiHandler openapigen.ServerInterface, openapiYamlPath string) *S
 }
 
 func (s *Server) Start(addr string) {
+
 	service := &http.Server{
 		Addr:         addr,
 		Handler:      s.router,
@@ -65,6 +100,7 @@ func (s *Server) Start(addr string) {
 		WriteTimeout: writeTimeout * time.Second,
 		IdleTimeout:  idleTimeout * time.Second,
 	}
+
 	go func() {
 		log.Printf("listening on %s", addr)
 		err := service.ListenAndServe()
@@ -79,7 +115,6 @@ func (s *Server) Start(addr string) {
 	<-stop
 	log.Println("Shutting down gracefully...")
 
-	// Timeout for shutdown
 	const shutdownTimeout = 10 * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()

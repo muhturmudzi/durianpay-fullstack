@@ -8,9 +8,9 @@ export interface IPaymentList {
 }
 
 export interface IPayment {
-  paymentId: number | null
-  merchantName: string
-  date: string
+  id: number | null
+  merchant: string
+  createdAt: string
   amount: number
   status: IStatusPayment
 }
@@ -18,9 +18,9 @@ export interface IPayment {
 export type IStatusPayment = 'completed' | 'processing' | 'failed'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getPaymentList = async (params: any): Promise<AxiosResponse<IPaymentList>> => {
+export const getPaymentList = async (params: any): Promise<AxiosResponse<{ payments: IPayment[] }>> => {
   try {
-    const res: AxiosResponse<IPaymentList> = await instance.get('/payment', { params })
+    const res: AxiosResponse<{ payments: IPayment[] }> = await instance.get('/dashboard/v1/payments', { params })
 
     return res
   } catch (error) {
