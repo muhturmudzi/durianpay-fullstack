@@ -68,7 +68,7 @@ onMounted(() => {
       <CardHeader class="gap-4">
         <img
           src="https://framerusercontent.com/images/tgeBxZjClYlLQ8DExSWrxd918Z8.png?scale-down-to=512&width=1250&height=1250"
-          alt="iptv exe"
+          alt="durianpay"
           class="w-20 mx-auto"
         />
         <CardTitle>Login</CardTitle>

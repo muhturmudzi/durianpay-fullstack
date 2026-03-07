@@ -14,6 +14,8 @@ export interface IToken {
   token: string
 }
 
+export type IRole = 'admin' | ''
+
 export const login = async (body: ILogin): Promise<AxiosResponse<ILoginResponse>> => {
   try {
     const res: AxiosResponse<ILoginResponse> = await instance.post('/user/login', body)
