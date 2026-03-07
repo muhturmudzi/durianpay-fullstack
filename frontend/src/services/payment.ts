@@ -1,7 +1,9 @@
 import type { AxiosResponse } from 'axios'
 import instance from './http'
+import type { ITableMeta } from '@/components/CustomTable.vue'
 
 export interface IPaymentList {
+  meta: ITableMeta
   data: IPayment[]
 }
 
