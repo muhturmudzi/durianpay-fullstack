@@ -1,5 +1,6 @@
 import axios, { type AxiosInstance } from 'axios'
 import applyCaseMiddleware from 'axios-case-converter'
+import { errorMessages } from './error'
 
 const instance: AxiosInstance = applyCaseMiddleware(
   axios.create({
@@ -32,6 +33,10 @@ instance.interceptors.response.use(
     if (error.response.status === 403) {
       localStorage.clear()
       window.location.href = '/auth/login?err=unauthorized'
+    }
+
+    if (error.config.method !== 'get') {
+      alert(errorMessages(error.response.data.message))
     }
 
     return Promise.reject(error)

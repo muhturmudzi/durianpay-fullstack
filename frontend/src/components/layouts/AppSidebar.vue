@@ -50,7 +50,7 @@ const items: IMenu[] = [
     title: 'Dashboard',
     url: '/dashboard',
     icon: LayoutDashboard,
-    roles: ['admin']
+    roles: ['cs', 'operation']
   },
 ]
 
@@ -78,7 +78,10 @@ const doSignOut = () => {
         alt="durianpay"
         class="w-12 md:w-16 lg:w-20 mx-auto"
       />
-      <p class="text-center text-primary">{{ userStore.userName }}</p>
+      <div>
+        <p class="text-center text-primary">{{ userStore.email }}</p>
+        <p class="text-center text-primary text-sm">{{ userStore.roleName }}</p>
+      </div>
     </SidebarHeader>
 
     <SidebarContent>

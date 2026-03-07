@@ -18,10 +18,12 @@ import {
 import Label from '@/components/ui/label/Label.vue'
 import InputText from '@/components/vee-validate/InputText.vue'
 import { Button } from '@/components/ui/button'
-import { type ILogin } from '@/services/auth'
+import { type ILogin, login } from '@/services/auth'
+import { useUserStore } from '@/stores/user'
 
 const route = useRoute()
 const router = useRouter()
+const userStore = useUserStore()
 
 const showPass = ref(false)
 const loading = ref(false)
@@ -34,21 +36,26 @@ const { handleSubmit } = useForm<ILogin>({
 })
 
 const onSubmit = handleSubmit(async (values) => {
+  // operation@test.com
+  // cs@test.com
+  // password
   try {
     loading.value = true
-    // const { data: { data } } = await login(values)
+    const { data } = await login(values)
+    console.log(data)
 
-    // localStorage.setItem('token', data.token)
+    userStore.$patch({
+      email: data.email,
+      roleName: data.role,
+    })
+    localStorage.setItem('user', JSON.stringify({
+      email: data.email,
+      roleName: data.role
+    }))
+    localStorage.setItem('token', data.token)
 
-    setTimeout(() => {
-      console.log(values)
-      localStorage.setItem('token', 'Bearer')
-      loading.value = false
-      router.push('/')
-    }, 500)
-
-    // loading.value = false
-    // router.push('/')
+    loading.value = false
+    router.push('/')
   } catch (error) {
     console.error(error)
     loading.value = false
