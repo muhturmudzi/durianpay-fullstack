@@ -18,9 +18,9 @@ export interface IPayment {
 export type IStatusPayment = 'completed' | 'processing' | 'failed'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getPaymentList = async (params: any): Promise<AxiosResponse<{ payments: IPayment[] }>> => {
+export const getPaymentList = async (params: any): Promise<AxiosResponse<IPaymentList>> => {
   try {
-    const res: AxiosResponse<{ payments: IPayment[] }> = await instance.get('/dashboard/v1/payments', { params })
+    const res: AxiosResponse<IPaymentList> = await instance.get('/dashboard/v1/payments', { params })
 
     return res
   } catch (error) {

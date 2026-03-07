@@ -25,8 +25,9 @@ const fetchPayments = async () => {
     isFetching.value = true
     const res = await getPaymentList({
       ...pagination.meta,
+      status: 'failed'
     })
-    data.data = res.data.payments
+    data.data = res.data.data
     data.meta = {
       page: pagination.meta.page,
       limit: pagination.meta.limit,

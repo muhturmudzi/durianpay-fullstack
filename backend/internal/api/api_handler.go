@@ -30,7 +30,7 @@ func (h *APIHandler) GetDashboardV1Payments(w http.ResponseWriter, r *http.Reque
 	payments := h.PaymentUC.GetPayments(status)
 
 	response := map[string]interface{}{
-		"payments": payments,
+		"data": payments,
 	}
 
 	writeJSON(w, http.StatusOK, response)
