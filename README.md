@@ -35,12 +35,14 @@ How to run frontend on local:
 ```bash
 create .env file then add VITE_BASE_API=http://localhost:8080
 npm run dev
+then open http://localhost:5173
 ```
 
 How to run frontend on production build:
 
 ```bash
 docker build --build-arg VITE_BASE_API=http://localhost:8080 -t fe-durianpay . && docker run -d -p 5173:80 --name frontend-container fe-durianpay
+then open http://localhost:5173
 
 if there's conflict container already use, please run first:
 docker rm -f frontend-container
@@ -55,7 +57,13 @@ Add here
 Login to frontend by visiting:
 
 ```bash
-Add here
+http://localhost:5173/auth/login and input account
+
+user:
+operation@test.com
+cs@test.com
+
+pass: password
 ```
 
 evidences: Add video evidences of your service
