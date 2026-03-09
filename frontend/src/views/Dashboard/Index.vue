@@ -9,6 +9,13 @@ import {
   Card,
   CardContent,
 } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 const route = useRoute()
 const router = useRouter()
@@ -25,7 +32,7 @@ const fetchPayments = async () => {
     isFetching.value = true
     const res = await getPaymentList({
       ...pagination.meta,
-      status: 'failed'
+      status: status.value === 'all' ? undefined : status.value
     })
     data.data = res.data.data
     data.meta = {
@@ -67,10 +74,23 @@ watch(
   },
   { deep: true }
 )
+
+const status = ref('all')
+const listStatus = [
+  { label: 'All', value: 'all' },
+  { label: 'Completed', value: 'completed' },
+  { label: 'Processing', value: 'processing' },
+  { label: 'Failed', value: 'failed' }
+]
+
+const onChangeStatus = () => {
+  pagination.setQuery({ ...pagination.meta, page: 1 })
+  fetchPayments()
+}
 </script>
 
 <template>
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-lg mb-6">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mb-6">
     <Card class="bg-white/90 border border-[#E5E5E5] py-4">
       <CardContent class="space-y-2">
         <p>Total</p>
@@ -96,6 +116,21 @@ watch(
       </CardContent>
     </Card>
   </div>
+
+  <Select v-model="status" @update:model-value="onChangeStatus">
+    <SelectTrigger id="select-trigger-status" class="min-w-40">
+      <SelectValue placeholder="Select status" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem
+        v-for="(item, index) in listStatus"
+        :key="`status-${index}`"
+        :value="String(item.value)"
+      >
+        {{ item.label }}
+      </SelectItem>
+    </SelectContent>
+  </Select>
 
   <TablePayment
     :data="data"

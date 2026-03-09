@@ -52,5 +52,17 @@ const head = ref<IHead[]>([
     <template #amount="{ item }">
       {{ toCurrencyFormat(item.amount) }}
     </template>
+    <template #status="{ item }">
+      <span
+        :class="{
+          'text-green-600 bg-green-100 border-green-200': item.status === 'completed',
+          'text-yellow-600 bg-yellow-100 border-yellow-200': item.status === 'processing',
+          'text-red-600 bg-red-100 border-red-200': item.status === 'failed',
+        }"
+        class="px-2 py-1 border rounded-2xl text-sm font-medium"
+      >
+        {{ item.status }}
+      </span>
+    </template>
   </CustomTable>
 </template>

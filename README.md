@@ -12,31 +12,38 @@ node v24.13.1
 Install all related requirements:
 
 ```bash
-Add here
+go mod tidy
+npm run install
 ```
 
 How to run backend server on local:
 
 ```bash
-Add here
+go mod tidy
 ```
 
 How to run backend server on production build:
 
 ```bash
-Add here
+make dep
+make openapi-gen
+make run
 ```
 
 How to run frontend on local:
 
 ```bash
-Add here
+create .env file then add VITE_BASE_API=http://localhost:8080
+npm run dev
 ```
 
 How to run frontend on production build:
 
 ```bash
-Add here
+docker build --build-arg VITE_BASE_API=http://localhost:8080 -t fe-durianpay . && docker run -d -p 5173:80 --name frontend-container fe-durianpay
+
+if there's conflict container already use, please run first:
+docker rm -f frontend-container
 ```
 
 To checking openapi documentations, you can visit this url after backend running.
